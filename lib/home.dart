@@ -34,11 +34,31 @@ class _HomePageState extends State<HomePage> {
     return "Success";
   }
 
+List datajember;
+  Future<String> getJsonData2() async {
+    var response = await http.get(
+      //Encode the url
+      Uri.encodeFull('https://rongamerindo.000webhostapp.com/?pass=onaldtamvan'),
+    );
+    //  print(response.body);
+
+    setState(() {
+      // ignore: deprecated_member_use
+      var convertDataToJson = json.decode(response.body);
+      datajember = convertDataToJson['jember'];
+      // data2 = convertDataToJson['wilayah'];
+      // data3 = convertDataToJson['berita'];
+      //keranjang = data2[0]['id'];
+    });
+
+    return "Success";
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getJsonData();
+    getJsonData2();
   }
 
   @override
@@ -48,8 +68,11 @@ class _HomePageState extends State<HomePage> {
         title: Text("Informan Covid-19"),
         backgroundColor: Colors.orange,
       ),
-      body: Column(
+      body: datajember[0] == null || data[0] == null ?
+      CircularProgressIndicator():
+      Column(
         children: <Widget>[
+         
           //Corausel ngambil dari berita
           Expanded(
             child: Carousel(
@@ -67,23 +90,71 @@ class _HomePageState extends State<HomePage> {
               images: [
                 data3.length != null
                     ? NetworkImage(
-                        data3[data3.length - random.nextInt(5)]['gambar'])
+                        data3[random.nextInt(5)]['gambar'])
                     : NetworkImage(
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRkOClf4EklmVKJEiMFW3xMDonARIfyUTMQpZqOik9yp8j_TlAE"),
                 data3.length != null
                     ? NetworkImage(
-                        data3[data3.length - random.nextInt(5)]['gambar'])
+                        data3[random.nextInt(5)]['gambar'])
                     : NetworkImage(
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRkOClf4EklmVKJEiMFW3xMDonARIfyUTMQpZqOik9yp8j_TlAE"),
                 data3.length != null
                     ? NetworkImage(
-                        data3[data3.length - random.nextInt(5)]['gambar'])
+                        data3[random.nextInt(5)]['gambar'])
                     : NetworkImage(
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRkOClf4EklmVKJEiMFW3xMDonARIfyUTMQpZqOik9yp8j_TlAE"),
               ],
             ),
           ),
           //akhircorausel
+                //infomasi nasional
+          Text("Infomasi Jember"),
+          Expanded(
+            child: datajember.length == null
+                ? CircularProgressIndicator()
+                : ListView.builder(
+                    itemCount: datajember.length,
+                    itemBuilder: (context, i) {
+                      return Container(
+                          child: datajember[i]['positif'] != null
+                              ?  Column(
+                                      children: <Widget>[
+                                         Row(
+                                          children: <Widget>[
+                                            Text("kecamatan : "),
+                                            Text(datajember[i]['kecamatan']
+                                                .toString())
+                                          ],
+                                        ),
+                                        Row(
+                                          children: <Widget>[
+                                            Text("odp : "),
+                                            Text(datajember[i]['odp']
+                                                .toString())
+                                          ],
+                                        ),
+                                      Row(
+                                          children: <Widget>[
+                                            Text("pdp : "),
+                                            Text(datajember[i]['pdp']
+                                                .toString())
+                                          ],
+                                        ),
+                                       Row(
+                                          children: <Widget>[
+                                            Text("positif : "),
+                                            Text(datajember[i]['positif']
+                                                .toString())
+                                          ],
+                                        ),
+                                   
+                                      ],
+                                    )
+                                  : Container());
+                              
+                    }),
+          ),
+//akhir informasi nasional
           //infomasi nasional
           Text("Infomasi Nasional"),
           Expanded(
@@ -145,7 +216,7 @@ class _HomePageState extends State<HomePage> {
           data2.length == null
               ? Container()
               : Expanded(
-                  child: data.length == null
+                  child: data2.length == null
                       ? CircularProgressIndicator()
                       : GridView.builder(
                           itemCount: data2.length,
